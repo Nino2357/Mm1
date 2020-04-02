@@ -26,9 +26,21 @@ void test1(code* seq0) //Teste la fonction initialisation_code
 	printf("\n");
 }
 
-rangee *capture_rangee(void)
-{
-	rangee *rang_actuel = malloc(sizeof(rangee));
+void capture_rangee(rangee* tete)
+{	
+	D printf("dans capture rangee\n");
+    rangee *nouv_rg = malloc(sizeof(rangee));
+	rangee *actuel = tete;
+	D printf("%p\n", &actuel);
+    while (actuel->suiv != NULL) //Parcours de la liste
+    {
+    	D printf("dans while\n");
+        actuel = actuel->suiv;
+    }
+    D printf("apres while\n");
+    actuel->suiv = nouv_rg;
+        D printf("apres parcours\n");
+    nouv_rg->suiv = NULL;
 	int nb_temp = -1;
 	printf("Choisir une combinaison :\nPrendre des nombres compris entre 1 et %d\n",NB_COULEURS);
 	for(int i=0;i<NB_TROUS;i++)
@@ -42,10 +54,9 @@ rangee *capture_rangee(void)
 		}
 		else
 		{
-			rang_actuel->tab_code[i]=nb_temp;
+			nouv_rg->tab_code[i]=nb_temp;
 		}
 	}
-	return rang_actuel;
 }
 
 void test2(rangee* rg) //Teste la fonction capture_rangee
@@ -58,8 +69,16 @@ void test2(rangee* rg) //Teste la fonction capture_rangee
 	printf("\n");
 }
 
-void comparaison(rangee* rg, code* co)
+void comparaison(rangee* tete, code* co)
 {
+	D printf("dans comparaison\n");
+	rangee *actuel = tete;
+	D printf("%p\n", &actuel);
+    while (actuel->suiv != NULL) //Parcours de la liste
+    {
+    	D printf("dans while\n");
+        actuel = actuel->suiv;
+    }
 	int nb_blanc=0;	//Un pour chaque fiche du code ayant une fiche de la meme couleur placée par le décodeur
 	bool blanc_util[NB_TROUS]; //Sert a compter qu'une seul fois chaque fiche réponse lors du décompte des blancs
 	for(int y=0;y<NB_TROUS;y++) //met les valeurs a true par défaut
@@ -69,19 +88,17 @@ void comparaison(rangee* rg, code* co)
 	int nb_rouge=0;	//Quand emplacement + couleur ok
 	for(int i=0;i<NB_TROUS;i++) //Parcours du code
 	{
-		if (rg->tab_code[i]==co->tab_code[i]) //s'il y a un parfait (rouge)
+		if (actuel->tab_code[i]==co->tab_code[i]) //s'il y a un parfait (rouge)
 		{
 			nb_rouge++;
 			blanc_util[i]= false;
-
-
 		}
 		else
 		{
 			for(int k=0;k<NB_TROUS;k++) //Parcours de la proposition de décodage
 			{
-				D printf("code %d\tsol %d\tutil? %s\n ",co->tab_code[i],rg->tab_code[k], blanc_util[k]?"true":"false");
-				if(rg->tab_code[k]==co->tab_code[i] && blanc_util[k])
+				D printf("code %d\tsol %d\tutil? %s\n ",co->tab_code[i],actuel->tab_code[k], blanc_util[k]?"true":"false");
+				if(actuel->tab_code[k]==co->tab_code[i] && blanc_util[k])
 				{
 					D printf("ok\n");
 					nb_blanc++;
@@ -92,25 +109,60 @@ void comparaison(rangee* rg, code* co)
 			}
 		}
 	}
-	rg->nb_rouge=nb_rouge;
-	rg->nb_blanc=nb_blanc;
+	actuel->nb_rouge=nb_rouge;
+	actuel->nb_blanc=nb_blanc;
 }
 void test3(rangee* rg, code* co)
 {
 	comparaison(rg,co);
 	printf("nb blanc: %d\nnb rouge: %d\n",rg->nb_blanc,rg->nb_rouge);
 }
-
-//Provisoirement dans ce dossier
-int main(void)
+/*
+void test_global(void)
 {
-	srand(time(NULL)); //initialisation de rand
 	code* seq0 = initialisation_code();
 	test1(seq0);
 
-	rangee* rg = capture_rangee();
+	rangee* rg = capture_rangee(tete);
 	test2(rg);
 
-	test3(rg,seq0);
+	test3(rg,seq0);	
+}*/
+void affichage_board(rangee* tete)
+{
+	rangee *actuel = tete;
+    while (actuel->suiv != NULL) //Parcours de la liste
+    {
+        actuel = actuel->suiv;
+    	for(int i=0; i<NB_TROUS;i++)
+    	{
+    		printf("%d\t",actuel->tab_code[i]);
+    	}
+    	printf("Blanc :%d\tRouge :%d\n",actuel->nb_blanc,actuel->nb_rouge);
+    }
+}
+void partie_decodage(void)
+{
+	srand(time(NULL)); //initialisation de rand
+	code* seq= initialisation_code();
+	test1(seq);
+	rangee* tete = malloc(sizeof(rangee));
+	tete->suiv = NULL;
+	int tours = 0;
+	D printf("avant boucle\n");
+	while(tours<NB_TOURS_MAX)
+	{
+		D printf("dans boucle\n");
+		capture_rangee(tete);
+		D printf("apres capture\n");
+		comparaison(tete,seq);
+		affichage_board(tete);
+	}
+
+}
+//Provisoirement dans ce dossier
+int main(void)
+{
+	partie_decodage();
 	return 0;
 }

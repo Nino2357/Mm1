@@ -1,3 +1,6 @@
+#ifndef H_CODEUR
+#define H_CODEUR
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h> //Indispensable pour rand
@@ -17,7 +20,7 @@ typedef struct rangee
 	int tab_code[NB_TROUS];
 	int nb_blanc;
 	int nb_rouge;
-	struct range *suiv;
+	struct rangee *suiv;
 }*Rg,rangee;
 
 typedef struct Code
@@ -26,4 +29,4 @@ typedef struct Code
 	int tab_code[NB_TROUS];
 }*co,code;
 
-
+#endif

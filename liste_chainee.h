@@ -1,5 +1,3 @@
-#ifndef H_LISTE_CHAINEE
-#define H_LISTE_CHAINEE
 
 typedef struct Liste
 {
