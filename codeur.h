@@ -11,8 +11,10 @@ typedef struct rangee
 	struct range *suiv;
 }*Rg,rangee;
 
-typedef struct Liste
+typedef struct Code
 {
-    rangee *premier;
-}*Li,Liste;
+	int tours;
+	int tab_code[NB_TROUS];
+}*co,code;
+
 
