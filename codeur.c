@@ -128,18 +128,30 @@ void test_global(void)
 
 	test3(rg,seq0);	
 }*/
-void affichage_board(rangee* tete)
+bool affichage_board(rangee* tete)
 {
+	bool victoire = false;
 	rangee *actuel = tete;
+	int tour =1;
+	printf("************************************************************************\n\n");
     while (actuel->suiv != NULL) //Parcours de la liste
-    {
+    {	
+    	printf("Tour%d :\t\t",tour);
+    	tour ++;
         actuel = actuel->suiv;
     	for(int i=0; i<NB_TROUS;i++)
     	{
     		printf("%d\t",actuel->tab_code[i]);
     	}
     	printf("Blanc :%d\tRouge :%d\n",actuel->nb_blanc,actuel->nb_rouge);
+    	if(actuel->nb_rouge==NB_TROUS)
+    	{
+    		victoire = true;
+    	}
     }
+    printf("\n");
+    printf("************************************************************************\n");
+    return victoire;
 }
 void partie_decodage(void)
 {
@@ -148,17 +160,27 @@ void partie_decodage(void)
 	test1(seq);
 	rangee* tete = malloc(sizeof(rangee));
 	tete->suiv = NULL;
-	int tours = 0;
+	int tour = 0;
+	bool fin = false;
 	D printf("avant boucle\n");
-	while(tours<NB_TOURS_MAX)
+	while(tour<NB_TOURS_MAX)
 	{
 		D printf("dans boucle\n");
 		capture_rangee(tete);
 		D printf("apres capture\n");
 		comparaison(tete,seq);
-		affichage_board(tete);
+		fin = affichage_board(tete);
+		if (fin) break;
+		tour ++;
 	}
-
+	if (fin)
+	{
+		printf("\n\n\t\t\t!!! VICTOIRE !!!\n\n\n");
+	}
+	else 
+	{
+		printf("\n\n\t\t\t     DEFAITE\n\n\n");
+	}
 }
 //Provisoirement dans ce dossier
 int main(void)
