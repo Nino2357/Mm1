@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h> //Indispensable pour rand
-
 #include "codeur.h" //Contient les fonctions d'utilisation des listes chainées
 
 
@@ -34,12 +30,12 @@ rangee *capture_rangee(void)
 {
 	rangee *rang_actuel = malloc(sizeof(rangee));
 	int nb_temp = -1;
-	printf("Choisir une combinaison :\nPrendre des nombres compris entre 0 et %d\n",NB_COULEURS);
+	printf("Choisir une combinaison :\nPrendre des nombres compris entre 1 et %d\n",NB_COULEURS);
 	for(int i=0;i<NB_TROUS;i++)
 	{
 		printf("Nb%d :\t",i+1);
 		scanf("%d",&nb_temp);
-		if(nb_temp<0 || nb_temp>=NB_COULEURS)
+		if(nb_temp<1 || nb_temp>=NB_COULEURS+1)
 		{
 			printf("Erreur de saisie\nPrendre des nombres compris entre 0 et %d\n",NB_COULEURS);
 			i --;
@@ -62,6 +58,48 @@ void test2(rangee* rg) //Teste la fonction capture_rangee
 	printf("\n");
 }
 
+void comparaison(rangee* rg, code* co)
+{
+	int nb_blanc=0;	//Un pour chaque fiche du code ayant une fiche de la meme couleur placée par le décodeur
+	bool blanc_util[NB_TROUS]; //Sert a compter qu'une seul fois chaque fiche réponse lors du décompte des blancs
+	for(int y=0;y<NB_TROUS;y++) //met les valeurs a true par défaut
+	{
+		blanc_util[y]=true;
+	}
+	int nb_rouge=0;	//Quand emplacement + couleur ok
+	for(int i=0;i<NB_TROUS;i++) //Parcours du code
+	{
+		if (rg->tab_code[i]==co->tab_code[i]) //s'il y a un parfait (rouge)
+		{
+			nb_rouge++;
+			blanc_util[i]= false;
+
+
+		}
+		else
+		{
+			for(int k=0;k<NB_TROUS;k++) //Parcours de la proposition de décodage
+			{
+				D printf("code %d\tsol %d\tutil? %s\n ",co->tab_code[i],rg->tab_code[k], blanc_util[k]?"true":"false");
+				if(rg->tab_code[k]==co->tab_code[i] && blanc_util[k])
+				{
+					D printf("ok\n");
+					nb_blanc++;
+					blanc_util[k]=false;
+					break;
+				}
+				D printf("non ok\n");
+			}
+		}
+	}
+	rg->nb_rouge=nb_rouge;
+	rg->nb_blanc=nb_blanc;
+}
+void test3(rangee* rg, code* co)
+{
+	comparaison(rg,co);
+	printf("nb blanc: %d\nnb rouge: %d\n",rg->nb_blanc,rg->nb_rouge);
+}
 
 //Provisoirement dans ce dossier
 int main(void)
@@ -72,5 +110,7 @@ int main(void)
 
 	rangee* rg = capture_rangee();
 	test2(rg);
+
+	test3(rg,seq0);
 	return 0;
 }
